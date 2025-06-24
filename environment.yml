@@ -1,0 +1,10 @@
+# for snowflake streamlit hosting
+name: app_environment
+channels:
+  - snowflake
+dependencies:
+  - duckdb=1.2.1
+  - polars=0.20.18
+  - python=3.11.*
+  - snowflake-snowpark-python=
+  - streamlit=
