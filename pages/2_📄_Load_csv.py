@@ -1,12 +1,10 @@
 import streamlit as st
 import polars as pl
-import time
 
+st.set_page_config(page_title="Charger un .csv", page_icon="📄")
+st.title("📄 Charger un .csv")
 
 session = st.connection("snowflake").session()
-
-
-st.title("🔀 Charger un .csv")
 
 # 2. Upload du fichier CSV
 uploaded_file = st.file_uploader("📄 Le .csv à charger dans snowflake", type="csv")

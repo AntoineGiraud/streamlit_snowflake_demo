@@ -10,7 +10,7 @@ dependencies = [
     "polars>=1.31.0",
     "snowflake-connector-python>=3.15.0",
     "snowflake-snowpark-python>=1.33.0",
-    "streamlit[snowflake]>=1.46.0",
+    "streamlit>=1.46.0",
 ]
 
 [tool.ruff]

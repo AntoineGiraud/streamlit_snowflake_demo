@@ -1,10 +1,13 @@
 import streamlit as st
+from streamlit.connections import SnowflakeConnection
+from typing import List, Dict, Optional, Any
+
+st.set_page_config(page_title="Bug report démo", page_icon="👻")
+st.title("👻 Bug report demo!")
+st.info("Demo given by [snowflake - Streamlit Getting Started](https://docs.snowflake.com/en/developer-guide/streamlit/getting-started#build-your-first-sis-app)", icon="ℹ️")
 
 cnx = st.connection("snowflake")
 session = cnx.session()
-
-st.title("👻 Bug report demo!")
-st.info("Demo given by [snowflake - Streamlit Getting Started](https://docs.snowflake.com/en/developer-guide/streamlit/getting-started#build-your-first-sis-app)", icon="ℹ️")
 
 
 def get_data(_session):
@@ -18,7 +21,7 @@ def get_data(_session):
     return data
 
 
-def add_row_to_db(cnx, row):
+def add_row_to_db(cnx: SnowflakeConnection, row: Dict):
     """Safely insert a row into the BUG_REPORT_DATA table using parameterized queries."""
     # cf. doc [st.connections.snowflakeconnection](docs.streamlit.io/develop/api-reference/connections/st.connections.snowflakeconnection#snowflakeconnectioncursor)
     sql = """
