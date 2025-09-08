@@ -3,7 +3,7 @@ import streamlit as st
 
 st.set_page_config(page_title="Démos avec Snowflake", page_icon="🧰")
 st.title("🧰 Démos avec Snowflake")
-st.markdown("*By Antoine*")
+st.markdown("*By Antoine G.*")
 
 
 session = st.connection("snowflake").session()
