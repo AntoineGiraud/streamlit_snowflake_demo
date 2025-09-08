@@ -9,10 +9,12 @@ session = st.connection("snowflake").session()
 # 2. Upload du fichier CSV
 uploaded_file = st.file_uploader("📄 Le .csv à charger dans snowflake", type="csv")
 
+choix_separator = st.selectbox("📋 le séparateur ?", [',', ';'])
+
 print(f"{uploaded_file=}")
 
 if uploaded_file:
-    df = pl.read_csv(uploaded_file)
+    df = pl.read_csv(uploaded_file, separator=choix_separator)
     st.write(f"✅ Fichier {uploaded_file.name} chargé :", df.shape)
     st.dataframe(df)
 
@@ -20,7 +22,7 @@ if uploaded_file:
         with st.spinner(f"⏳ table en création - {df.height} lignes"):
             res = session.write_pandas(
                 df.to_pandas(),
-                uploaded_file.name.replace(".csv", ""),
+                uploaded_file.name.replace(".csv", "").upper(),
                 database="BIKESHARE",
                 schema="BRONZE",
                 auto_create_table=True,
