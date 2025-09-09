@@ -9,6 +9,33 @@ st.info("Demo given by [snowflake - Streamlit Getting Started](https://docs.snow
 cnx = st.connection("snowflake")
 session = cnx.session()
 
+def init_table(_session):
+    """Create and populate the table if it doesn't exist"""
+    create_query = """
+    CREATE TABLE IF NOT EXISTS bikeshare.bronze.BUG_REPORT_DATA (
+        AUTHOR VARCHAR(25),
+        BUG_TYPE VARCHAR(25),
+        COMMENT VARCHAR(100),
+        DATE DATE,
+        BUG_SEVERITY NUMBER(38,0)
+    );
+    """
+    insert_query = """
+    INSERT INTO bikeshare.bronze.BUG_REPORT_DATA (AUTHOR, BUG_TYPE, COMMENT, DATE, BUG_SEVERITY)
+    VALUES
+    ('John Doe', 'UI', 'The button is not aligned properly', '2024-03-01', 3),
+    ('Aisha Patel', 'Performance', 'Page load time is too long', '2024-03-02', 5),
+    ('Bob Johnson', 'Functionality', 'Unable to submit the form', '2024-03-03', 4),
+    ('Sophia Kim', 'Security', 'SQL injection vulnerability found', '2024-03-04', 8),
+    ('Michael Lee', 'Compatibility', 'Does not work on Internet Explorer', '2024-03-05', 2),
+    ('Tyrone Johnson', 'UI', 'Font size is too small', '2024-03-06', 3),
+    ('David Martinez', 'Performance', 'Search feature is slow', '2024-03-07', 4),
+    ('Fatima Abadi', 'Functionality', 'Logout button not working', '2024-03-08', 3),
+    ('William Taylor', 'Security', 'Sensitive data exposed in logs', '2024-03-09', 7),
+    ('Nikolai Petrov', 'Compatibility', 'Not compatible with Safari', '2024-03-10', 2);
+    """
+    _session.sql(create_query).collect()
+    _session.sql(insert_query).collect()
 
 def get_data(_session):
     """Fetch table data"""
@@ -54,4 +81,11 @@ if submitted:
 
 expander = st.expander("See 100 most recent records")
 with expander:
-    st.dataframe(get_data(session))
+    try:
+        data = get_data(session)
+    except Exception as e:
+        st.toast("Table non trouvée. Initialisation en cours...")
+        init_table(session)
+        data = get_data(session)
+
+    st.dataframe(data)
