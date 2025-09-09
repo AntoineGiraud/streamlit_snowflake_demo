@@ -76,7 +76,7 @@ with st.spinner(f"⏳ récupération des tables `{db_to_show}`"):
     selected_table = st.selectbox("📋 Sélectionnez une table à exporter", sf_tables["FULL_NAME"].to_list())
 
     # Bouton d'export
-    if st.button("💾 Exporter en .parquet"):
+    if st.button("💾 Préparer le .parquet"):
         schema, table = selected_table.split(".")
         query = f"SELECT * FROM {db_to_show}.{schema}.{table}"
 
@@ -91,3 +91,11 @@ with st.spinner(f"⏳ récupération des tables `{db_to_show}`"):
             st.success(f"✅ Export terminé : `{parquet_path}`")
 
             snow_offload_stage_interne(session, schema, table)
+        
+        with open(parquet_path, "rb") as f:
+            st.download_button(
+                label="📥 Télécharger le fichier .parquet",
+                data=f,
+                file_name=os.path.basename(parquet_path),
+                mime="application/octet-stream"
+            )
