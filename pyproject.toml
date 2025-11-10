@@ -15,3 +15,11 @@ dependencies = [
 
 [tool.ruff]
 line-length = 200
+
+
+[tool.uv]
+dev-dependencies = [
+    "pre-commit>=4.4.0",
+    "pytest>=7.0.0",
+    "ruff>=0.1.0",
+]
