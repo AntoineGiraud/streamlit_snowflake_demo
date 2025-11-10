@@ -91,11 +91,11 @@ with st.spinner(f"⏳ récupération des tables `{db_to_show}`"):
             st.success(f"✅ Export terminé : `{parquet_path}`")
 
             snow_offload_stage_interne(session, schema, table)
-        
+
         with open(parquet_path, "rb") as f:
             st.download_button(
                 label="📥 Télécharger le fichier .parquet",
                 data=f,
                 file_name=os.path.basename(parquet_path),
-                mime="application/octet-stream"
+                mime="application/octet-stream",
             )

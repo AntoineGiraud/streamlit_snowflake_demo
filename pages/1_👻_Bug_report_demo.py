@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit.connections import SnowflakeConnection
-from typing import List, Dict, Optional, Any
+from typing import Dict
 
 st.set_page_config(page_title="Bug report démo", page_icon="👻")
 st.title("👻 Bug report demo!")
@@ -8,6 +8,7 @@ st.info("Demo given by [snowflake - Streamlit Getting Started](https://docs.snow
 
 cnx = st.connection("snowflake")
 session = cnx.session()
+
 
 def init_table(_session):
     """Create and populate the table if it doesn't exist"""
@@ -36,6 +37,7 @@ def init_table(_session):
     """
     _session.sql(create_query).collect()
     _session.sql(insert_query).collect()
+
 
 def get_data(_session):
     """Fetch table data"""
@@ -83,7 +85,7 @@ expander = st.expander("See 100 most recent records")
 with expander:
     try:
         data = get_data(session)
-    except Exception as e:
+    except Exception:
         st.toast("Table non trouvée. Initialisation en cours...")
         init_table(session)
         data = get_data(session)

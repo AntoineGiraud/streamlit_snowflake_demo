@@ -9,7 +9,7 @@ session = st.connection("snowflake").session()
 # 2. Upload du fichier CSV
 uploaded_file = st.file_uploader("📄 Le .csv à charger dans snowflake", type="csv")
 
-choix_separator = st.selectbox("📋 le séparateur ?", [',', ';'])
+choix_separator = st.selectbox("📋 le séparateur ?", [",", ";"])
 
 print(f"{uploaded_file=}")
 
