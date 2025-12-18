@@ -4,7 +4,10 @@ from typing import Dict
 
 st.set_page_config(page_title="Bug report démo", page_icon="👻")
 st.title("👻 Bug report demo!")
-st.info("Demo given by [snowflake - Streamlit Getting Started](https://docs.snowflake.com/en/developer-guide/streamlit/getting-started#build-your-first-sis-app)", icon="ℹ️")
+st.info(
+    "Demo given by [snowflake - Streamlit Getting Started](https://docs.snowflake.com/en/developer-guide/streamlit/getting-started#build-your-first-sis-app)",
+    icon="ℹ️",
+)
 
 cnx = st.connection("snowflake")
 session = cnx.session()
@@ -13,7 +16,7 @@ session = cnx.session()
 def init_table(_session):
     """Create and populate the table if it doesn't exist"""
     create_query = """
-    CREATE TABLE IF NOT EXISTS bikeshare.bronze.BUG_REPORT_DATA (
+    CREATE TABLE IF NOT EXISTS bronze.BUG_REPORT_DATA (
         AUTHOR VARCHAR(25),
         BUG_TYPE VARCHAR(25),
         COMMENT VARCHAR(100),
@@ -22,7 +25,7 @@ def init_table(_session):
     );
     """
     insert_query = """
-    INSERT INTO bikeshare.bronze.BUG_REPORT_DATA (AUTHOR, BUG_TYPE, COMMENT, DATE, BUG_SEVERITY)
+    INSERT INTO bronze.BUG_REPORT_DATA (AUTHOR, BUG_TYPE, COMMENT, DATE, BUG_SEVERITY)
     VALUES
     ('John Doe', 'UI', 'The button is not aligned properly', '2024-03-01', 3),
     ('Aisha Patel', 'Performance', 'Page load time is too long', '2024-03-02', 5),
@@ -42,7 +45,7 @@ def init_table(_session):
 def get_data(_session):
     """Fetch table data"""
     query = """
-        select * from bikeshare.bronze.BUG_REPORT_DATA
+        select * from bronze.BUG_REPORT_DATA
         order by date desc
         limit 100
     """
@@ -54,7 +57,7 @@ def add_row_to_db(cnx: SnowflakeConnection, row: Dict):
     """Safely insert a row into the BUG_REPORT_DATA table using parameterized queries."""
     # cf. doc [st.connections.snowflakeconnection](docs.streamlit.io/develop/api-reference/connections/st.connections.snowflakeconnection#snowflakeconnectioncursor)
     sql = """
-        INSERT INTO bikeshare.bronze.BUG_REPORT_DATA (author, bug_type, comment, date, bug_severity)
+        INSERT INTO bronze.BUG_REPORT_DATA (author, bug_type, comment, date, bug_severity)
         VALUES (?, ?, ?, ?, ?)
     """
     params = (row["author"], row["bug_type"], row["comment"], row["date"], row["bug_severity"])
@@ -75,7 +78,16 @@ with form:
 
 if submitted:
     try:
-        add_row_to_db(cnx, {"author": author, "bug_type": bug_type, "comment": comment, "date": str(date), "bug_severity": bug_severity})
+        add_row_to_db(
+            cnx,
+            {
+                "author": author,
+                "bug_type": bug_type,
+                "comment": comment,
+                "date": str(date),
+                "bug_severity": bug_severity,
+            },
+        )
         st.success("Thanks! Your bug was recorded in the database.")
         st.balloons()
     except Exception as e:

@@ -23,7 +23,6 @@ if uploaded_file:
             res = session.write_pandas(
                 df.to_pandas(),
                 uploaded_file.name.replace(".csv", "").upper(),
-                database="BIKESHARE",
                 schema="BRONZE",
                 auto_create_table=True,
                 overwrite=True,

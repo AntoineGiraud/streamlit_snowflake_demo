@@ -9,7 +9,6 @@ st.title("💾 Export .parquet table ❄️")
 conn = st.connection("snowflake")
 session = conn.session()
 
-db_to_show = "BIKESHARE"
 os.makedirs("offload", exist_ok=True)
 
 
@@ -18,9 +17,9 @@ os.makedirs("offload", exist_ok=True)
 
 @st.cache_data
 def get_tables(_session):
-    query = f"""-- list tables
+    query = """-- list tables
         select table_schema, table_name, table_type, row_count, bytes, created, last_ddl_by, table_owner, comment, concat(table_schema, '.', table_name) as full_name
-        from {db_to_show}.information_schema.tables
+        from information_schema.tables
         where table_schema not ilike 'information_schema'
         order by 1,2
     """
@@ -29,9 +28,9 @@ def get_tables(_session):
 
 
 def snow_offload_stage_interne(session, schema: str, table: str) -> str:
-    export_sql = f"""
+    export_sql = """
 COPY INTO @~/offload/{schema}_{table}.parquet
-FROM {db_to_show}.{schema}.{table}
+FROM {schema}.{table}
 FILE_FORMAT = (TYPE = PARQUET COMPRESSION = SNAPPY)
 SINGLE = TRUE
 OVERWRITE = TRUE;
@@ -40,7 +39,10 @@ OVERWRITE = TRUE;
     expander_snowcli = st.expander("Alternative: Offload stage interne + snowcli")
     with expander_snowcli:
         st.code(export_sql.strip(), language="sql")
-        st.code(f"snow storage cp @~/offload/{schema}_{table}.parquet file://./offload/{schema}_{table}.parquet", language="bash")
+        st.code(
+            f"snow storage cp @~/offload/{schema}_{table}.parquet file://./offload/{schema}_{table}.parquet",
+            language="bash",
+        )
 
     # session.sql(export_sql).collect()
     return f"{schema}_{table}.parquet"
@@ -65,10 +67,10 @@ def stream_table_to_parquet(conn, full_table_name: str, parquet_path: str):
     return df
 
 
-with st.spinner(f"⏳ récupération des tables `{db_to_show}`"):
+with st.spinner("⏳ récupération des tables"):
     sf_tables = get_tables(session)
 
-    expander = st.expander(f"Liste des {len(sf_tables)} tables `{db_to_show}`")
+    expander = st.expander(f"Liste des {len(sf_tables)} tables")
     with expander:
         st.dataframe(sf_tables)
 
@@ -78,11 +80,11 @@ with st.spinner(f"⏳ récupération des tables `{db_to_show}`"):
     # Bouton d'export
     if st.button("💾 Préparer le .parquet"):
         schema, table = selected_table.split(".")
-        query = f"SELECT * FROM {db_to_show}.{schema}.{table}"
+        query = f"SELECT * FROM {schema}.{table}"
 
         with st.spinner(f"📦 Export de `{selected_table}` en cours..."):
             parquet_path = f"offload/{table}.parquet"
-            stream_table_to_parquet(conn, f"{db_to_show}.{schema}.{table}", f"offload/{table}.parquet")
+            stream_table_to_parquet(conn, f"{schema}.{table}", f"offload/{table}.parquet")
 
             # slow j'ai peur #pasDeStream
             # pl_df = pl.from_pandas(session.sql(query).to_pandas())
