@@ -8,11 +8,13 @@ st.title("🧰 Démos avec Snowflake")
 session = st.connection("snowflake").session()
 
 
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=60 * 3)  # cache pour 3 minutes
 def get_tables(_session) -> pl.DataFrame:
-    """Get list of tables in Snowflake database"""
+    """Get list of tables in a given Snowflake database"""
     query = """-- list tables
-        select table_schema, table_name, table_type, row_count, bytes, created, last_ddl, last_altered, last_ddl_by, table_owner, comment, table_catalog
+        select table_catalog, table_schema, table_name, table_type,
+               row_count, bytes, created, last_ddl, last_altered,
+               last_ddl_by, table_owner, comment
         from information_schema.tables
         where table_schema not ilike 'information_schema'
         order by 1,2
@@ -25,6 +27,9 @@ def get_tables(_session) -> pl.DataFrame:
         ]
     )
     return df
+
+
+df = get_tables(session)
 
 
 def human_size_format(bytes: int) -> str:
@@ -41,9 +46,6 @@ def human_nb_format(num: int) -> str:
         return f"{num / 1_000:.1f}k"
     else:
         return str(num)
-
-
-df = get_tables(session)
 
 
 # ------ KPI / Big ass numbers ------

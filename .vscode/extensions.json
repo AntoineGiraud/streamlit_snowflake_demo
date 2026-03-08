@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "tamasfe.even-better-toml",
+    "yzhang.markdown-all-in-one",
+    "charliermarsh.ruff",
+    "mechatroner.rainbow-csv",
+    "adamviola.parquet-explorer",
+    "mhutchie.git-graph",
+  ],
+  "unwantedRecommendations": []
+}
